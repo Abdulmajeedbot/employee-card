@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Card</title>
+    <!-- Include Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /* Employee Card Styles */
+        #card {
+            width: 300px;
+            height: 550px; /* Increased height */
+            margin: 20px auto;
+            position: relative;
+            background: linear-gradient(to bottom, #FFFFFF 40%, #09446A 40%);
+            overflow: hidden;
+            color: #FFFFFF;
+        }
+
+        /* Organization Logo */
+        #org-logo {
+            width: 250px; /* Increased width */
+            height: auto;
+            margin: 10px auto 20px;
+            display: block;
+        }
+
+        /* Image Container */
+        #image-container {
+            width: 130px;
+            height: 170px;
+            margin: 30px auto 0; /* Adjusted margin */
+            position: relative;
+            overflow: hidden;
+            background-color: #FFFFFF;
+            border-radius: 15px;
+        }
+
+        /* Rest of your styles */
+        /* ... */
+    </style>
+</head>
+<body>
+
+    <!-- Employee Card Container -->
+    <div id="card">
+        <!-- Organization's Logo -->
+        <img id="org-logo" src="scfhslogo.png" alt="Organization Logo" crossorigin="anonymous" />
+        <!-- Image Container -->
+        <div id="image-container">
+            <img id="employee-image" src="#" alt="Employee Image" crossorigin="anonymous" />
+        </div>
+        <!-- Employee Information -->
+        <h2 id="employee-name">Employee Name</h2>
+        <h3 id="employee-title">Job Title</h3>
+        <!-- Job Number Square -->
+        <div id="job-number-container">
+            <p id="employee-number">Job Number</p>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <input type="file" accept="image/*" id="image-upload">
+    <input type="text" id="name-input" placeholder="Enter Employee Name">
+    <input type="text" id="title-input" placeholder="Enter Job Title">
+    <input type="text" id="number-input" placeholder="Enter Job Number">
+    <input type="file" id="excel-upload" accept=".xlsx, .xls">
+    <select id="employee-select" style="width: 80%; margin: 10px auto;">
+        <option value="">Select Employee</option>
+    </select>
+    <button id="save-card">Save Card as Image</button>
+
+    <!-- Include Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Include SheetJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Include html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Scripts -->
+    <script>
+        // Your existing JavaScript code
+        // ...
+
+        // Updated 'Save Card' function
+        saveCardButton.addEventListener('click', function() {
+            // Hide controls for the snapshot
+            const controls = document.querySelectorAll('input, select, button');
+            controls.forEach(control => control.style.display = 'none');
+
+            // Use a timeout to allow the browser to reflow after hiding controls
+            setTimeout(function() {
+                html2canvas(document.getElementById('card'), {
+                    useCORS: true,
+                    allowTaint: false,
+                    scale: 4, // Increased scale factor for higher resolution
+                    imageTimeout: 0,
+                    backgroundColor: null,
+                }).then(function(canvas) {
+                    // Restore controls visibility
+                    controls.forEach(control => control.style.display = '');
+
+                    const link = document.createElement('a');
+                    link.download = 'employee_card.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }).catch(function(error) {
+                    // Restore controls visibility in case of error
+                    controls.forEach(control => control.style.display = '');
+                    console.error('Error capturing the card:', error);
+                    alert('An error occurred while saving the card. Please try again.');
+                });
+            }, 100); // Wait 100 milliseconds
+        });
+
+        // Rest of your JavaScript code
+        // ...
+    </script>
+</body>
+</html>
