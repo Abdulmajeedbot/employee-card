@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Card</title>
+    <!-- Include Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /* Font Faces */
+        @font-face {
+            font-family: 'DIN Next Arabic';
+            src: url('fonts/DINNextArabic-Regular.woff2') format('woff2'),
+                 url('fonts/DINNextArabic-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'DIN Next Arabic';
+            src: url('fonts/DINNextArabic-Medium.woff2') format('woff2'),
+                 url('fonts/DINNextArabic-Medium.woff') format('woff');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'DIN Next Arabic';
+            src: url('fonts/DINNextArabic-Heavy.woff2') format('woff2'),
+                 url('fonts/DINNextArabic-Heavy.woff') format('woff');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        /* Apply the font to all elements */
+        body, input, select, button, #card {
+            font-family: 'DIN Next Arabic', Arial, sans-serif;
+        }
+
+        /* Employee Card Styles */
+        #card {
+            width: 300px;
+            height: 550px;
+            margin: 20px auto;
+            position: relative;
+            background: linear-gradient(to bottom, #FFFFFF 40%, #09446A 40%);
+            overflow: hidden;
+            color: #FFFFFF;
+        }
+
+        /* Organization Logo */
+        #org-logo {
+            width: 250px;
+            height: auto;
+            margin: 10px auto 20px;
+            display: block;
+        }
+
+        /* Image Container */
+        #image-container {
+            width: 130px;
+            height: 170px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background-color: #FFFFFF;
+            border-radius: 15px;
+        }
+
+        /* Employee Image */
+        #employee-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            user-select: none;
+            transform-origin: center center;
+        }
+
+        /* Employee Name */
+        #employee-name {
+            font-size: 24px;
+            margin: 10px 0 5px 0;
+            color: #FFFFFF;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        /* Employee Job Title */
+        #employee-title {
+            font-size: 18px;
+            margin: 5px 0;
+            color: #54C0E8 !important;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Department, Job Number, and QR Code Container */
+        #dept-number-qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 20px 0 20px;
+        }
+
+        /* Department and Job Number Container */
+        #dept-number-container {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Department Text */
+        #employee-department {
+            font-size: 18px;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        /* Job Number Container */
+        #job-number-container {
+            background-color: #00AE85;
+            width: 100px;
+            margin: 0 auto;
+            padding: 5px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* Employee Job Number */
+        #employee-number {
+            font-size: 18px;
+            color: #FFFFFF;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        /* QR Code Container */
+        #qrcode-container {
+            background-color: #09446A;
+            padding: 5px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        /* QR Code */
+        #qrcode {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Control Styles */
+        input[type="file"],
+        input[type="text"],
+        select,
+        button {
+            display: block;
+            margin: 10px auto;
+            width: 80%;
+            font-family: 'DIN Next Arabic', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Employee Card Container -->
+    <div id="card">
+        <!-- Organization's Logo -->
+        <img id="org-logo" src="logo.png" alt="Organization Logo" crossorigin="anonymous" />
+
+        <!-- Image Container -->
+        <div id="image-container">
+            <img id="employee-image" src="#" alt="Employee Image" crossorigin="anonymous" />
+        </div>
+
+        <!-- Employee Information -->
+        <h2 id="employee-name">Employee Name</h2>
+        <h3 id="employee-title">Job Title</h3>
+
+        <!-- Department, Job Number, and QR Code Container -->
+        <div id="dept-number-qr-container">
+            <!-- Department and Job Number -->
+            <div id="dept-number-container">
+                <!-- Department -->
+                <div id="employee-department">Department</div>
+                <!-- Job Number Box -->
+                <div id="job-number-container">
+                    <p id="employee-number">Job Number</p>
+                </div>
+            </div>
+            <!-- QR Code Container -->
+            <div id="qrcode-container">
+                <div id="qrcode"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <input type="file" accept="image/*" id="image-upload">
+    <input type="text" id="name-input" placeholder="Enter Employee Name">
+    <input type="text" id="title-input" placeholder="Enter Job Title">
+    <input type="text" id="department-input" placeholder="Enter Department">
+    <input type="text" id="number-input" placeholder="Enter Job Number">
+    <input type="file" id="excel-upload" accept=".xlsx, .xls">
+    <select id="employee-select" style="width: 80%; margin: 10px auto;">
+        <option value="">Select Employee</option>
+    </select>
+    <button id="save-card">Save Card as Image</button>
+
+    <!-- Include Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Include SheetJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Include html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Include QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- Scripts -->
+    <script>
+        // References to DOM elements
+        const imageContainer = document.getElementById('image-container');
+        const employeeImage = document.getElementById('employee-image');
+        const imageUpload = document.getElementById('image-upload');
+        const nameInput = document.getElementById('name-input');
+        const titleInput = document.getElementById('title-input');
+        const departmentInput = document.getElementById('department-input');
+        const numberInput = document.getElementById('number-input');
+        const excelUpload = document.getElementById('excel-upload');
+        const saveCardButton = document.getElementById('save-card');
+        const employeeName = document.getElementById('employee-name');
+        const employeeTitle = document.getElementById('employee-title');
+        const employeeDepartment = document.getElementById('employee-department');
+        const employeeNumber = document.getElementById('employee-number');
+        const qrCodeContainer = document.getElementById('qrcode');
+
+        let employees = []; // Store all employee data
+
+        // Initialize Select2
+        $(document).ready(function() {
+            $('#employee-select').select2({
+                placeholder: 'Select Employee',
+                allowClear: true
+            });
+        });
+
+        // Initialize QR Code
+        let qrCode = new QRCode(qrCodeContainer, {
+            text: '',
+            width: 80,
+            height: 80,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Variables to track dragging state
+        let isDragging = false;
+        let startX, startY;
+        let initialX, initialY;
+
+        // Variables for zooming
+        let scale = 1; // Initial scale of the image
+        const maxScale = 3; // Maximum zoom level
+        const minScale = 0.5; // Minimum zoom level
+        const scaleStep = 0.1; // Zoom increment
+
+        // Zoom on image click
+        employeeImage.addEventListener('click', function(e) {
+            if (scale < maxScale) {
+                scale += scaleStep;
+            } else {
+                scale = minScale; // Reset to minimum scale
+            }
+            employeeImage.style.transform = `scale(${scale})`;
+        });
+
+        // Mouse events for dragging
+        employeeImage.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            employeeImage.classList.add('dragging');
+            startX = e.clientX;
+            startY = e.clientY;
+            initialX = parseInt(employeeImage.style.left) || 0;
+            initialY = parseInt(employeeImage.style.top) || 0;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                let newX = initialX + dx;
+                let newY = initialY + dy;
+
+                const containerRect = imageContainer.getBoundingClientRect();
+                const imageRect = employeeImage.getBoundingClientRect();
+                const scaledWidth = imageRect.width;
+                const scaledHeight = imageRect.height;
+
+                const maxX = 0;
+                const maxY = 0;
+                const minX = containerRect.width - scaledWidth;
+                const minY = containerRect.height - scaledHeight;
+
+                newX = Math.min(maxX, Math.max(minX, newX));
+                newY = Math.min(maxY, Math.max(minY, newY));
+
+                employeeImage.style.left = newX + 'px';
+                employeeImage.style.top = newY + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (isDragging) {
+                isDragging = false;
+                employeeImage.classList.remove('dragging');
+            }
+        });
+
+        // Touch events for mobile devices
+        employeeImage.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                employeeImage.classList.add('dragging');
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                initialX = parseInt(employeeImage.style.left) || 0;
+                initialY = parseInt(employeeImage.style.top) || 0;
+            }
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (isDragging && e.touches.length === 1) {
+                const touch = e.touches[0];
+                const dx = touch.clientX - startX;
+                const dy = touch.clientY - startY;
+                let newX = initialX + dx;
+                let newY = initialY + dy;
+
+                const containerRect = imageContainer.getBoundingClientRect();
+                const imageRect = employeeImage.getBoundingClientRect();
+                const scaledWidth = imageRect.width;
+                const scaledHeight = imageRect.height;
+
+                const maxX = 0;
+                const maxY = 0;
+                const minX = containerRect.width - scaledWidth;
+                const minY = containerRect.height - scaledHeight;
+
+                newX = Math.min(maxX, Math.max(minX, newX));
+                newY = Math.min(maxY, Math.max(minY, newY));
+
+                employeeImage.style.left = newX + 'px';
+                employeeImage.style.top = newY + 'px';
+
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('touchend', function() {
+            if (isDragging) {
+                isDragging = false;
+                employeeImage.classList.remove('dragging');
+            }
+        });
+
+        // Handle image upload
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    employeeImage.src = e.target.result;
+                    // Reset image position and scale
+                    employeeImage.style.left = '0px';
+                    employeeImage.style.top = '0px';
+                    scale = 1;
+                    employeeImage.style.transform = `scale(${scale})`;
+                    // Adjust image size to fill container
+                    employeeImage.onload = function() {
+                        const imageAspectRatio = employeeImage.naturalWidth / employeeImage.naturalHeight;
+                        const containerAspectRatio = imageContainer.offsetWidth / imageContainer.offsetHeight;
+                        if (imageAspectRatio < containerAspectRatio) {
+                            employeeImage.style.width = '100%';
+                            employeeImage.style.height = 'auto';
+                        } else {
+                            employeeImage.style.width = 'auto';
+                            employeeImage.style.height = '100%';
+                        }
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Update employee name
+        nameInput.addEventListener('input', function() {
+            employeeName.textContent = nameInput.value || 'Employee Name';
+        });
+
+        // Update employee job title
+        titleInput.addEventListener('input', function() {
+            employeeTitle.textContent = titleInput.value || 'Job Title';
+        });
+
+        // Update department
+        departmentInput.addEventListener('input', function() {
+            employeeDepartment.textContent = departmentInput.value || 'Department';
+        });
+
+        // Update job number and QR code
+        numberInput.addEventListener('input', function() {
+            employeeNumber.textContent = numberInput.value || 'Job Number';
+            // Generate QR code
+            qrCode.clear();
+            if (numberInput.value) {
+                qrCode.makeCode(numberInput.value);
+            }
+        });
+
+        // Handle Excel file upload
+        excelUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    // Store the employee data
+                    employees = jsonData;
+
+                    // Populate the Select2 dropdown
+                    const select = $('#employee-select');
+                    select.empty(); // Clear previous options
+                    select.append('<option></option>'); // For placeholder
+
+                    employees.forEach((employee, index) => {
+                        select.append(new Option(employee.Name, index));
+                    });
+
+                    // Refresh Select2
+                    select.trigger('change');
+                };
+                reader.readAsBinaryString(file);
+            }
+        });
+
+        // Handle employee selection
+        $('#employee-select').on('select2:select', function(e) {
+            const selectedIndex = e.params.data.id;
+            if (selectedIndex !== '') {
+                const employeeData = employees[selectedIndex];
+                employeeName.textContent = employeeData.Name || 'Employee Name';
+                employeeTitle.textContent = employeeData.JobTitle || 'Job Title';
+                employeeDepartment.textContent = employeeData.Department || 'Department';
+                employeeNumber.textContent = employeeData.JobNumber || 'Job Number';
+
+                // Update inputs
+                nameInput.value = employeeData.Name || '';
+                titleInput.value = employeeData.JobTitle || '';
+                departmentInput.value = employeeData.Department || '';
+                numberInput.value = employeeData.JobNumber || '';
+
+                // Generate QR code
+                qrCode.clear();
+                if (employeeData.JobNumber) {
+                    qrCode.makeCode(employeeData.JobNumber.toString());
+                }
+            }
+        });
+
+        // Clear the card when selection is cleared
+        $('#employee-select').on('select2:clear', function() {
+            employeeName.textContent = 'Employee Name';
+            employeeTitle.textContent = 'Job Title';
+            employeeDepartment.textContent = 'Department';
+            employeeNumber.textContent = 'Job Number';
+            qrCode.clear();
+
+            // Clear inputs
+            nameInput.value = '';
+            titleInput.value = '';
+            departmentInput.value = '';
+            numberInput.value = '';
+        });
+
+        // Handle saving the card as an image
+        saveCardButton.addEventListener('click', function() {
+            // Hide controls for the snapshot
+            const controls = document.querySelectorAll('input, select, button');
+            controls.forEach(control => control.style.display = 'none');
+
+            // Use a timeout to allow the browser to reflow after hiding controls
+            setTimeout(function() {
+                html2canvas(document.getElementById('card'), {
+                    useCORS: true,
+                    allowTaint: false,
+                    scale: 4,
+                    imageTimeout: 0,
+                    backgroundColor: null,
+                }).then(function(canvas) {
+                    // Restore controls visibility
+                    controls.forEach(control => control.style.display = '');
+
+                    const link = document.createElement('a');
+                    link.download = 'employee_card.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }).catch(function(error) {
+                    // Restore controls visibility in case of error
+                    controls.forEach(control => control.style.display = '');
+                    console.error('Error capturing the card:', error);
+                    alert('An error occurred while saving the card. Please try again.');
+                });
+            }, 100); // Wait 100 milliseconds
+        });
+    </script>
+</body>
+</html>
