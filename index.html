@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Employee Card</title>
+    <title>بطاقة الموظف</title>
     <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
@@ -34,6 +34,8 @@
         /* Apply the font to all elements */
         body, input, select, button, #card {
             font-family: 'DIN Next Arabic', Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
         }
 
         /* Employee Card Styles */
@@ -100,6 +102,7 @@
             align-items: center;
             justify-content: space-between;
             margin: 20px 20px 0 20px;
+            flex-direction: row-reverse; /* Adjust for RTL */
         }
 
         /* Department and Job Number Container */
@@ -157,6 +160,8 @@
             margin: 10px auto;
             width: 80%;
             font-family: 'DIN Next Arabic', Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
         }
     </style>
 </head>
@@ -165,26 +170,26 @@
     <!-- Employee Card Container -->
     <div id="card">
         <!-- Organization's Logo -->
-        <img id="org-logo" src="logo.png" alt="Organization Logo" crossorigin="anonymous" />
+        <img id="org-logo" src="logo.png" alt="شعار المنظمة" crossorigin="anonymous" />
 
         <!-- Image Container -->
         <div id="image-container">
-            <img id="employee-image" src="#" alt="Employee Image" crossorigin="anonymous" />
+            <img id="employee-image" src="#" alt="صورة الموظف" crossorigin="anonymous" />
         </div>
 
         <!-- Employee Information -->
-        <h2 id="employee-name">Employee Name</h2>
-        <h3 id="employee-title">Job Title</h3>
+        <h2 id="employee-name">اسم الموظف</h2>
+        <h3 id="employee-title">المسمى الوظيفي</h3>
 
         <!-- Department, Job Number, and QR Code Container -->
         <div id="dept-number-qr-container">
             <!-- Department and Job Number -->
             <div id="dept-number-container">
                 <!-- Department -->
-                <div id="employee-department">Department</div>
+                <div id="employee-department">القسم</div>
                 <!-- Job Number Box -->
                 <div id="job-number-container">
-                    <p id="employee-number">Job Number</p>
+                    <p id="employee-number">رقم الوظيفة</p>
                 </div>
             </div>
             <!-- QR Code Container -->
@@ -196,15 +201,15 @@
 
     <!-- Controls -->
     <input type="file" accept="image/*" id="image-upload">
-    <input type="text" id="name-input" placeholder="Enter Employee Name">
-    <input type="text" id="title-input" placeholder="Enter Job Title">
-    <input type="text" id="department-input" placeholder="Enter Department">
-    <input type="text" id="number-input" placeholder="Enter Job Number">
+    <input type="text" id="name-input" placeholder="أدخل اسم الموظف">
+    <input type="text" id="title-input" placeholder="أدخل المسمى الوظيفي">
+    <input type="text" id="department-input" placeholder="أدخل القسم">
+    <input type="text" id="number-input" placeholder="أدخل رقم الوظيفة">
     <input type="file" id="excel-upload" accept=".xlsx, .xls">
     <select id="employee-select" style="width: 80%; margin: 10px auto;">
-        <option value="">Select Employee</option>
+        <option value="">اختر الموظف</option>
     </select>
-    <button id="save-card">Save Card as Image</button>
+    <button id="save-card">حفظ البطاقة كصورة</button>
 
     <!-- Include Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -228,6 +233,7 @@
         const departmentInput = document.getElementById('department-input');
         const numberInput = document.getElementById('number-input');
         const excelUpload = document.getElementById('excel-upload');
+        const employeeSelect = $('#employee-select');
         const saveCardButton = document.getElementById('save-card');
         const employeeName = document.getElementById('employee-name');
         const employeeTitle = document.getElementById('employee-title');
@@ -240,8 +246,13 @@
         // Initialize Select2
         $(document).ready(function() {
             $('#employee-select').select2({
-                placeholder: 'Select Employee',
-                allowClear: true
+                placeholder: 'اختر الموظف',
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return 'لا توجد نتائج';
+                    }
+                }
             });
         });
 
@@ -399,22 +410,22 @@
 
         // Update employee name
         nameInput.addEventListener('input', function() {
-            employeeName.textContent = nameInput.value || 'Employee Name';
+            employeeName.textContent = nameInput.value || 'اسم الموظف';
         });
 
         // Update employee job title
         titleInput.addEventListener('input', function() {
-            employeeTitle.textContent = titleInput.value || 'Job Title';
+            employeeTitle.textContent = titleInput.value || 'المسمى الوظيفي';
         });
 
         // Update department
         departmentInput.addEventListener('input', function() {
-            employeeDepartment.textContent = departmentInput.value || 'Department';
+            employeeDepartment.textContent = departmentInput.value || 'القسم';
         });
 
         // Update job number and QR code
         numberInput.addEventListener('input', function() {
-            employeeNumber.textContent = numberInput.value || 'Job Number';
+            employeeNumber.textContent = numberInput.value || 'رقم الوظيفة';
             // Generate QR code
             qrCode.clear();
             if (numberInput.value) {
@@ -443,7 +454,7 @@
                     select.append('<option></option>'); // For placeholder
 
                     employees.forEach((employee, index) => {
-                        select.append(new Option(employee.Name, index));
+                        select.append(new Option(employee['Full Name "AR"'], index));
                     });
 
                     // Refresh Select2
@@ -458,31 +469,31 @@
             const selectedIndex = e.params.data.id;
             if (selectedIndex !== '') {
                 const employeeData = employees[selectedIndex];
-                employeeName.textContent = employeeData.Name || 'Employee Name';
-                employeeTitle.textContent = employeeData.JobTitle || 'Job Title';
-                employeeDepartment.textContent = employeeData.Department || 'Department';
-                employeeNumber.textContent = employeeData.JobNumber || 'Job Number';
+                employeeName.textContent = employeeData['Full Name "AR"'] || 'اسم الموظف';
+                employeeTitle.textContent = employeeData['Position "AR"'] || 'المسمى الوظيفي';
+                employeeDepartment.textContent = employeeData['Organization "AR"'] || 'القسم';
+                employeeNumber.textContent = employeeData['Employee Number'] || 'رقم الوظيفة';
 
                 // Update inputs
-                nameInput.value = employeeData.Name || '';
-                titleInput.value = employeeData.JobTitle || '';
-                departmentInput.value = employeeData.Department || '';
-                numberInput.value = employeeData.JobNumber || '';
+                nameInput.value = employeeData['Full Name "AR"'] || '';
+                titleInput.value = employeeData['Position "AR"'] || '';
+                departmentInput.value = employeeData['Organization "AR"'] || '';
+                numberInput.value = employeeData['Employee Number'] || '';
 
                 // Generate QR code
                 qrCode.clear();
-                if (employeeData.JobNumber) {
-                    qrCode.makeCode(employeeData.JobNumber.toString());
+                if (employeeData['Employee Number']) {
+                    qrCode.makeCode(employeeData['Employee Number'].toString());
                 }
             }
         });
 
         // Clear the card when selection is cleared
         $('#employee-select').on('select2:clear', function() {
-            employeeName.textContent = 'Employee Name';
-            employeeTitle.textContent = 'Job Title';
-            employeeDepartment.textContent = 'Department';
-            employeeNumber.textContent = 'Job Number';
+            employeeName.textContent = 'اسم الموظف';
+            employeeTitle.textContent = 'المسمى الوظيفي';
+            employeeDepartment.textContent = 'القسم';
+            employeeNumber.textContent = 'رقم الوظيفة';
             qrCode.clear();
 
             // Clear inputs
@@ -518,7 +529,7 @@
                     // Restore controls visibility in case of error
                     controls.forEach(control => control.style.display = '');
                     console.error('Error capturing the card:', error);
-                    alert('An error occurred while saving the card. Please try again.');
+                    alert('حدث خطأ أثناء حفظ البطاقة. الرجاء المحاولة مرة أخرى.');
                 });
             }, 100); // Wait 100 milliseconds
         });
